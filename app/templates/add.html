@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<div>
+    <form method="POST" action="" enctype="multipart/form-data">
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Добавить стажировку</legend>
+                <div class="form-group">
+                    <label for="company">Компания:</label>
+                    <select class="custom-select" id="company" name="company" required>
+                        <option value="" disabled selected value>укажите компанию</option>
+                        <option value="new" id="newCompany">добавить новую</option>
+                        {% for company in companies %}
+                            <option value="{{company.id}}" id="{{company.id}}">{{company.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            <div id="addtitionalFields">
+                <div class="form-group" id="newCompanyField">
+                    <!-- field for a new company name -->
+                </div>
+
+                
+
+                <div class="form-group" id="internships">
+                    <!-- list of internships delivered with js -->
+                </div>
+
+                <div class="form-group" id="newInternshipField">
+                    <!-- field for a new internship name -->
+                </div>
+
+                <div class="form-group" id="newDepartmentField">
+                    <!-- field for a new department name -->
+                </div>
+            </div>
+                <div class="form-group">
+                    <label for="city">Город:</label>
+                    <select class="custom-select" id="city" name="city">
+                        <option value="" disabled selected value>укажите город</option>
+                        <option value="Санкт-Петербург" id="spb">Санкт-Петербург</option>
+                        <option value="Москва" id="moscow">Москва</option>   
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="timing">Длительность:</label>
+                    <select class="custom-select" id="timing" name="timing">
+                        <option value="" disabled selected value>длительность стажировки</option>
+                        {% for key, value in timing.items() %}
+                        <option value="{{value}}" id="{{value}}">{{key}}</option>
+                        {% endfor %} 
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Опубликовать</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+<script>
+var internships = {{jsonints|tojson}};
+
+$('#company').on('change', function() {
+     $('#newCompanyField').empty();
+     $('#internships').empty();
+     $('#newInternshipField').empty();
+     $('#newDepartmentField').empty();
+
+    if ($(this).find(":selected").prop('id') === "newCompany") {
+                $('#newCompanyField').append('<input class="form-control" name="newCompany" type="text"\
+                            placeholder="название компании" required>');
+                $('#newInternshipField').append('<label for="newInternshipField">Стажировка:</label>\
+                <input class="form-control" id="newInternshipField" name="newInternship" type="text"\
+                            placeholder="название стажировки" required>');
+                $('#newDepartmentField').append('<label for="department">Отдел:</label>\
+            <input class="form-control" name="newDepartment" type="text" placeholder="название отдела" required>');
+
+    } else {
+        $('#internships').append('<label for="internship">Стажировка:</label>\
+                    <select class="custom-select" id="internship" name="internship" required>\
+                        <option value="" disabled selected value>укажите стажировку</option>\
+                        <option value="new" id="newInternship">добавить новую</option>')
+        for (var i=0; i<internships.length; i++) {
+            
+            if (internships[i].company_id === parseInt($(this).find(":selected").prop('id'))) {
+                
+                $('#internship').append('<option value="'+internships[i].id+'" id="'+
+                        internships[i].id+'">'+internships[i].title+'</option>')
+            }
+        }
+    }
+});
+
+$('#newCompanyImage').on('change', function() {
+    if ($('.custom-file-input')[0].files[0]) {
+        var filename = $('.custom-file-input')[0].files[0].name;
+        $('.custom-file-label').empty();
+        $('.custom-file-label').append(filename);
+    } else {
+        $('.custom-file-label').empty();
+        $('.custom-file-label').append('<small>не более 1 Мб (не выбрано)</small>')
+    }
+});
+
+$('#internships').on('change', function() {
+     $('#newInternshipField').empty();
+     $('#newDepartmentField').empty();
+    if ($(this).find(":selected").prop('id') === "newInternship") {
+        $('#newInternshipField').append('<input class="form-control" name="newInternship" type="text"\
+                 placeholder="название стажировки" required>');
+        
+    }
+    $('#newDepartmentField').append('<label for="department">Отдел:</label>\
+            <input class="form-control" name="newDepartment" type="text" placeholder="название отдела" required>');
+});
+
+
+</script>
+
+{% endblock %}

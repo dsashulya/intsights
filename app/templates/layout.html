@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
+    />
+    <!-- arrows -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script   src="https://code.jquery.com/jquery-3.3.1.js"   integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="   crossorigin="anonymous"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+      integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+      integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+      crossorigin="anonymous"
+    ></script>
+    <!-- vk js sdk -->
+    <script src="https://vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
+
+    <title>{{ title }}</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light border">
+      <ul class="navbar-nav mt-2">
+        <li class="nav-item">
+            <button  onClick="goBack()" class="btn btn-link"><span class="fa fa-angle-left" style="font-size:24px;color:blue"></span></button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-link"><a class="nav-link py-0" href="/">Отзывы</a></button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-link"><a class="nav-link py-0" href="/form">Анкета</a></button>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-link"><a class="nav-link py-0" href="/add">Добавить стажировку</a></button>
+        </li>
+      </ul>
+    </nav>
+    <main class="container mt-3">
+      {% with messages = get_flashed_messages(with_categories = True) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{category}}">
+              {{message}}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block main %}{% endblock %}
+    </main>
+  </body>
+
+<script>
+
+function goBack() {
+  
+  window.history.back();
+};
+
+
+pages = function(start, end, length, rightExtend=true, leftExtend=true) {
+    
+    $("#pagination-area").empty().append(
+        $('<ul>', { class: "pagination justify-content-center"}));
+    if (leftExtend) {
+        $(".pagination").append(
+            $('<li>', {class: "page-item"}).append(
+                        $('<a>', {
+                            class: "page-link",
+                            href: "#",
+                            id: "0",
+                            text: "1"})))
+        .append($('<li>', {class: "page-item"}).append(
+                        $('<a>', {
+                            class: "page-link",
+                            href: "#",
+                            id: "extendPgs",
+                            text: "..."})));
+    }
+    
+    for (var i = start; i <= end; i++) {
+        
+        if (i === length) {
+        
+        break;
+        }
+        $(".pagination").append(
+            $('<li>', {class: "page-item"}).append(
+                        $('<a>', {
+                            class: "page-link",
+                            href: "#",
+                            id: i,
+                            text: i+1})));
+    }
+    
+    if (rightExtend) {
+        $(".pagination").append(
+            $('<li>', {class: "page-item"}).append(
+                        $('<a>', {
+                            class: "page-link",
+                            href: "#",
+                            id: "extendPgs",
+                            text: "..."})))
+        .append($('<li>', {class: "page-item"}).append(
+                        $('<a>', {
+                            class: "page-link",
+                            href: "#",
+                            id: length-1,
+                            text: length})));
+    }       
+};
+    
+</script>
+
+
+  </body>
+
+<style>
+
+
+.company-card {
+  margin-left: 75px
+}
+
+.navbar-nav {
+  flex-direction: row;
+  
+}
+
+.nav-item {
+  margin-right: 10px;
+  margin-bottom: 0%;
+  margin-top: 0%;
+}
+
+@media (min-width: 576px) {
+  main {
+    margin-bottom: 50px;
+  }
+}
+
+@media (min-width: 637px) {
+  main {
+    margin-bottom: 75px;
+  }
+}
+
+a {
+    color: black;
+    
+}
+a:hover {
+  color: black;
+}
+
+#blueHref {
+  color:blue;
+}
+
+pre {
+  margin-bottom: 0%;
+}
+
+
+pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+}
+
+
+.checked {
+    color: orange;
+}
+
+.unchecked {
+    color: lightgrey;
+}
+
+.nav-link, .nav-link:active  {
+    color: black;
+}
+
+.date {
+    text-align: right;
+}
+
+#ratio {
+    text-align: center;
+}
+
+.card-footer {
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+pre {
+    font-family: Helvetica;
+}
+
+</style>
+
+
+</html>

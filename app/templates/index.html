@@ -1,0 +1,140 @@
+{% extends "layout.html" %} 
+
+{% block main %}
+
+    
+        <legend class="border-bottom mb-2">
+            <div class="row">
+                <div class="col-4">Компании</div>
+                <div class="col-8">
+                    <form class="form-inline mb-2 ">
+                        <input class="form-control" style="width: 100%;" type="search" 
+                        incremental="incremental" placeholder="найти компанию" 
+                        aria-label="Search" id="search">
+                    </form>
+                </div>
+            </div>
+        </legend>
+
+    
+
+    <nav aria-label="pagination" id="pagination-area">
+        <ul class="pagination justify-content-center">
+            {% for i in range(1, l+1 if l <= 3 else 7) %}
+                <li class="page-item"><a class="page-link" href="#" id="{{i-1}}">{{i}}</a></li>
+            {% endfor %}
+            {% if l > 3 %}
+            <li class="page-item"><a class="page-link" href="#" id="extendPgs">...</a></li>
+            <li class="page-item"><a class="page-link" href="#" id="{{l-1}}">{{l}}</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+<div class="card-deck">
+    <div class="row">
+
+    {% for company in jsoncomps[0] if company['id'] %}
+    
+    
+        <div class="col-sm">
+            <div class="card company-card" style="width: 13rem;">
+                    
+                <a href="/company/{{company['id']}}"><img src="{{company['img']}}" class="card-img-top" alt="{{company['name']}}"></a>
+
+                <div class="card-body">
+                        <h6 class="card-title">
+                            <a href="/company/{{company['id']}}"><button class="btn" id="collapse{{company['id']}}" >Стажировки {{company['name']}}</button></a>
+                        </h6>
+                </div>
+                
+            </div>
+        </br>
+    </div>
+
+    {% endfor %}
+</div>
+</br>
+
+</div>    
+<script>
+var companies = JSON.parse('{{jsoncomps|tojson|safe}}');
+var companiesFlattened = [].concat.apply([], companies);
+var l = companies.length
+
+appendCompany = function(company, i=NaN) {
+    $("#companiesRow").append(
+                $('<div>', {class: "col-sm"}).append(
+                    $('<div>', {class: "card company-card card-"+i,
+                             style: "width: 13rem;"}).append(
+                                 $('<a>', {href: "/company/"+company.id}
+                             ).append($('<img>', {
+                                 src: company.img,
+                                 class: "card-img-top"}))).append(
+                        $('<div>', {class: "card-body"}).append(
+                            $('<h6>', {class: "card-title"}).append(
+                                $('<a>', {href: "/company/"+company.id}).append(
+                                    $('<button>', {class: "btn",
+                                    text: "Стажировки "+company.name})))))));
+}
+
+// pagination
+$("#pagination-area").on("click", ".page-link", function() {
+    
+    var id = parseInt($(this).attr("id"));
+    
+    // if pressed on a number (not ...)
+    if (!Number.isNaN(id)) {
+
+        // change companies
+        $(".card-deck").empty().append(
+            $('<div>', {class: "row",
+                         id: "companiesRow"}));
+        for (var i = 0; i < companies[id].length; i++) {
+            var company = companies[id][i];       
+            appendCompany(company, i);
+        }
+
+        // change pagination
+        if (id >= 5) {
+            if (id+3 >= l) pages(l-6, l, l, rightExtend=false)
+            else pages(id-2, id+2, l)
+        } else { 
+            pages(0, 5, l, true, false) }
+    }
+});
+
+
+$('#search').on("search", function() {
+    if (!$(this).val().length || !$(this).val().length) {
+        $(".card-deck").empty();
+        $(".card-deck").append('<div class="row" id="companiesRow">')
+        for (var i = 0; i < companies[0].length; i++) {
+            var company = companies[0][i];       
+            $("#companiesRow").append('<div class="col-sm"><div class="card company-card" style="width: 13rem;"><a href="/company/'+company.id+'"><img src="'+company.img+'" class="card-img-top"></a><div class="card-body"><h6 class="card-title"><a href="/company/'+company.id+'"><button class="btn">Стажировки '+company.name+'</button></a></h6></div></div></br></div></div>')
+            
+        }
+    } else {
+        $(".card-deck").empty();
+        $(".card-deck").append('<div class="row" id="companiesRow">')
+        
+        // search through the companies printing the matching ones
+        var count = 0;
+        for (var i=0; i<companiesFlattened.length; i++) {
+   
+            if (companiesFlattened[i].name.toLowerCase().includes($(this).val().toLowerCase())) {
+
+            var company = companiesFlattened[i];       
+            appendCompany(company, count);
+                // not more than 4 results
+                count++;
+                
+                if (count > 4) break
+            // else print not found
+            } 
+        }
+    }
+});
+</script>
+
+
+{% endblock %}

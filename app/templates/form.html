@@ -1,0 +1,250 @@
+{% extends "layout.html" %} 
+
+{% block main %}
+
+    <div>
+        <form method="POST" action="">
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Оцените стажировку</legend>
+                {% if failed %}<div class="form-group">
+                    Произошла ошибка, попробуйте еще раз
+                </div>{% endif %}
+                    <div class="form-group">
+                        <label for="company">Компания:</label>
+                        <select class="custom-select" id="company" name="company" required>
+                            <option value="" disabled selected value>укажите компанию</option>
+                            {% for company in companies %}
+                                <option value="{{company.name}}" id="{{company.id}}">{{company.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group" id="internships">
+                        <!-- list of internships delivered with js -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="start">Даты начала и окончания: </label>
+                    <div class="form-inline">
+                        <div class="row">
+                            <div class="col">
+                                <select class="custom-select" id="start-month" name="start-month" required>
+                                    <option value="" disabled>месяц</option>
+                                    {% for i in months %}
+                                        <option value="{{i}}">{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col">
+                                <select class="custom-select" id="start-year" name="start-year" required>
+                                    <option value="" disabled>год</option>
+                                    {% for i in range(current_year, 2000, -1) %}
+                                        <option value="{{i}}">{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                                <div class="col">
+                                    
+                                    <select class="custom-select" id="end month" name="end-month" required>
+                                        <option value="" disabled>месяц</option>
+                                        {% for i in months %}
+                                            <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select class="custom-select" id="end year" name="end-year" required>
+                                        <option value="" disabled>год</option>
+                                        {% for i in range(current_year+1, 2000, -1) %}
+                                            <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="workType">Тип занятости:</label>
+                        <select class="custom-select" id="workType" name="workType" required>
+                            <option value="" disabled selected value>укажите тип занятости</option>
+                            {% for key, value in type_of_work.items() %}
+                                <option value="{{key}}" id="{{value}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="schedule">График работы:</label>
+                        <select class="custom-select" id="schedule" name="schedule" required>
+                            <option value="" disabled selected value>укажите график работы</option>
+                            {% for key, value in schedule.items() %}
+                                <option value="{{key}}" id="{{value}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Общая оценка: </label>
+                    </br>
+                        {% for i in range(1, 6) %}
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value="{{i}}" name="rating" required>
+                            <label for="rating" class="form-check-label">{{i}}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                            <label>Соответствие обязанностей заявленным: </label>
+                    </br>
+                            {% for i in range(1, 6) %}
+                            <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" value="{{i}}" name="responsibilitiesRating" required>
+                                <label for="responsibilitiesRating" class="form-check-label">{{i}}</label>
+                            </div>
+                            {% endfor %}
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <label>Соответствие графика заявленному: </label>
+                </br>
+                        {% for i in range(1, 6) %}
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value="{{i}}" name="scheduleRating" required>
+                            <label for="scheduleRating" class="form-check-label">{{i}}</label>
+                        </div>
+                        {% endfor %}
+                    
+                </div>
+
+                    <div class="form-group">
+                        <label>Помощь наставников во время обучения: </label>
+                </br>
+                        {% for i in range(1, 6) %}
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value="{{i}}" name="mentorshipRating" required>
+                            <label for="mentorshipRating" class="form-check-label">{{i}}</label>
+                        </div>
+                        {% endfor %}
+                    
+                </div>
+
+                    <div class="form-group">
+                            <label>Полезность опыта для начала карьеры: </label>
+                        </br>
+                            {% for i in range(1, 6) %}
+                            <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" value="{{i}}" name="usefulnessRating" required>
+                                <label for="usefulnessRating" class="form-check-label">{{i}}</label>
+                            </div>
+                            {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Составлялся ли официальный договор? </label>
+                    </br>
+                        
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" value="1" name="contract" required>
+                            <span id="broaderSpan"><label for="contract" class="form-check-label">Да</label></span>
+                            <input type="radio" class="form-check-input" value="0" name="contract" required>
+                            <label for="contract" class="form-check-label">Нет</label>
+                        </div>
+                </div>
+
+                    <div class="form-group">
+                            <label>Оплачивалась ли стажировка? </label>
+                        </br>
+                            
+                            <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" value="1" name="paid" required>
+                                <span id="broaderSpan"><label for="paid" class="form-check-label">Да</label></span>
+                                <input type="radio" class="form-check-input" value="0" name="paid" required>
+                                <label for="paid" class="form-check-label">Нет</label>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                            <label>Продолжили ли Вы карьеру в компании после стажировки? </label>
+                        </br>
+                            
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio"  value="1" name="workContinued" required>
+                                <span id="broaderSpan"><label for="workContinued" class="form-check-label">Да</label></span>
+                                <input type="radio" class="form-check-input" value="0" name="workContinued" required>
+                                <label for="workContinued" class="form-check-label">Нет</label>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                                <label for="pros">Опишите плюсы:</label>
+                                <textarea class="form-control" name="pros" placeholder="(необязательное поле)" rows="3" maxlength="500" id="textarea1"></textarea>
+                                <small id="small1" class="text-muted">0/500</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cons">Опишите минусы:</label>
+                        <textarea class="form-control" name="cons" placeholder="(необязательное поле)" rows="3" maxlength="500" id="textarea2"></textarea>
+                        <small id="small2" class="text-muted">0/500</small>
+                     </div>
+
+                    
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Опубликовать</button>
+                    </div>
+
+                           
+            </fieldset>
+            </form>
+        </div> 
+<script>
+
+$("#textarea1").on("keyup", function() {
+    var len = $(this).val().length
+    $("#small1").empty()
+    $("#small1").append(len+'/500')
+})
+
+$("#textarea2").on("keyup", function() {
+    var len = $(this).val().length
+    $("#small2").empty()
+    $("#small2").append(len+'/500')
+})
+
+    var internships = {{jsonints|tojson}};
+    var departments = {{jsondepts|tojson}};
+
+    $("#company").on("change", function() {
+        
+        $("#internships").empty();
+        var company_id = parseInt($(this).find(":selected").prop('id'));
+        
+        for (var i=0; i<internships.length; i++){
+            if (internships[i].company_id === company_id) {
+                $("#internships").append('<i>'+internships[i].title+':'+'</i>');
+            
+                var internship_id = internships[i].id;
+
+                for (var j=0; i<departments.length; j++){
+                    if (departments[j].internship_id > internship_id) break;
+                    if (departments[j].internship_id === internship_id) {
+                        $("#internships").append('<div class="form-check"><input type="radio" class="form-check-input" value='+ departments[j].id +' name="internship" required><label for="department">'+ departments[j].title +'</label></div>')
+                    }
+                
+                }
+            }
+        }   
+    });
+
+
+</script>
+
+<style>
+#broaderSpan {
+    display: inline-block;
+    width: 3em;
+}
+</style>
+
+{% endblock %}

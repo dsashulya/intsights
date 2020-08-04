@@ -1,0 +1,190 @@
+{% extends "layout.html" %} 
+
+{% block main %}
+    <legend class="border-bottom mb-4">{{department.title}}</legend>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" id="infoTab">Информация</a></li>
+        <li class="nav-item"><a class="nav-link active" id="ratingTab" href="{{url_for('show_reviews', company_id=company_id, department_id=department['id'])}}">Рейтинг</a></li>
+        <li class="nav-item"><a class="nav-link" id="reviewsTab" href="/company/{{company_id}}/internship/{{department['id']}}/reviews">Отзывы</a></li>
+    </ul>
+    </br>
+
+<div id="mainBody">
+
+{% if reviews %}
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    Общая оценка 
+                </div>
+                <div class="col" id="ratio">
+                    {% for i in range(meanRating) %}
+                        <span class="fa fa-star checked"></span>
+                    {% endfor %}
+                    {% for i in range(5-meanRating) %}
+                        <span class="fa fa-star unchecked"></span>
+                    {% endfor %}
+                </div>
+            </div>
+        </br>
+        <div class="row">
+            <div class="col">
+                Возможные типы занятости
+            </div>
+            <div class="col" id="ratio">
+                {% for worktype in workTypes %}
+                    {{worktype_codes[worktype]}}
+            </br>
+                {% endfor %}
+            </div>
+        </div>
+    </br>
+    <div class="row">
+        <div class="col">
+            Возможные типы графика
+        </div>
+        <div class="col" id="ratio">
+            {% for schedule in schedules %}
+                {{schedule_codes[schedule]}}
+        </br>
+            {% endfor %}
+        </div>
+    </div>
+</br>
+            <div class="row">
+                    <div class="col">
+                        Соответствие графика заявленному 
+                    </div>
+                    <div class="col" id="ratio">
+                        {% for i in range(meanScheduleRating) %}
+                            <span class="fa fa-star checked"></span>
+                        {% endfor %}
+                        {% for i in range(5-meanScheduleRating) %}
+                            <span class="fa fa-star unchecked"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </br>
+            <div class="row">
+                <div class="col">
+                    Соответствие обязанностей заявленным 
+                </div>
+                <div class="col" id="ratio">
+                    {% for i in range(meanResponsibilitiesRating) %}
+                        <span class="fa fa-star checked"></span>
+                    {% endfor %}
+                    {% for i in range(5-meanResponsibilitiesRating) %}
+                        <span class="fa fa-star unchecked"></span>
+                    {% endfor %}
+                </div>
+            </div>
+        </br>
+        <div class="row">
+            <div class="col">
+                Помощь наставников
+            </div>
+            <div class="col" id="ratio">
+                {% for i in range(meanMentorshipRating) %}
+                    <span class="fa fa-star checked"></span>
+                {% endfor %}
+                {% for i in range(5-meanMentorshipRating) %}
+                    <span class="fa fa-star unchecked"></span>
+                {% endfor %}
+            </div>
+        </div>
+    </br>
+            <div class="row">
+                    <div class="col">
+                        Полезность для будущей карьеры
+                    </div>
+                    <div class="col" id="ratio">
+                        {% for i in range(meanUsefulnessRating) %}
+                            <span class="fa fa-star checked"></span>
+                        {% endfor %}
+                        {% for i in range(5-meanUsefulnessRating) %}
+                            <span class="fa fa-star unchecked"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </br>
+            <div class="row">
+                <div class="col">
+                    Подписывали официальный договор 
+                </div>
+                <div class="col" id="ratio">
+                    {{contract}}%</br><small>опрошенных</small>
+                </div>
+            </div>
+        </br>
+            <div class="row">
+                    <div class="col">
+                        Получали материальное вознаграждение 
+                    </div>
+                    <div class="col" id="ratio">
+                        {{paid}}%</br><small>опрошенных</small>
+                    </div>
+                </div>
+            </br>
+            <div class="row">
+                    <div class="col">
+                        Продолжили работать в компании
+                    </div>
+                    <div class="col" id="ratio">
+                        {{workContinued}}%</br><small>опрошенных</small>
+                    </div>
+                </div>
+            </br>
+        </div>
+        <div class="card-footer text-muted" style="font-size: 15px;">
+            <small>Рейтинг составлен на основе оценки <i>{{total}}</i> {% if total == 1 %}человека{% else %}человек{%endif%}</small>
+    </div>
+</div>
+</br>
+
+{% else %}
+
+    <div class="alert alert-primary" role="alert">
+       Здесь пока ничего нет, но вы можете
+       <a href="{{url_for('form')}}" id="blueHref" >оставить первый отзыв</a>
+    </div>
+
+{% endif %}
+</div>
+<script>
+    var loc = '{{department.location}}'
+    var timing = '{{timing}}'
+    var requirements = {{requirements|tojson}}
+    var responsibilities = {{responsibilities|tojson}}
+
+    $("#infoTab").on("click", function() {
+    $("#infotab").addClass('active');
+    $('#ratingTab').removeClass('active');
+    $("#mainBody").empty();
+    $('#mainBody').append('<div class="card bg-light"><div class="card-header"><b>Общая информация:</b></div><div class="card-body"><ul id="generalInfo">')
+    $('#generalInfo').append('<p>Город: '+loc+'</p>');
+
+    if (timing) $('#generalInfo').append('<p>Длительность: '+timing+'</p>');
+    
+    $('#mainBody').append('</br>');
+    if (requirements) {
+        $("#mainBody").append('<div class="card bg-light"><div class="card-header"><b>Требования:</b></div><div class="card-body"><ul id="requirements">')
+        for (var i=0; i<requirements.length; i++){
+                $("#requirements").append('<li>'+requirements[i]+'</li>')
+        }
+        $('#mainBody').append('</br>')
+    }
+
+    if (responsibilities) {
+        $("#mainBody").append('<div class="card bg-light"><div class="card-header"><b>Обязанности:</b></div><div class="card-body"><ul id="responsibilities">')
+        for (var i=0; i<responsibilities.length; i++){
+                $("#responsibilities").append('<li>'+responsibilities[i]+'</li>')
+        }
+        $('#mainBody').append('</br>')
+    }
+
+    
+});
+</script>
+{% endblock %}

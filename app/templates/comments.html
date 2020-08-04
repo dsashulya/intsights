@@ -1,0 +1,138 @@
+{% extends "layout.html" %} 
+
+{% block main %}
+    <legend class="border-bottom mb-4">{{department.title}}</legend>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" id="infoTab">Информация</a></li>
+        <li class="nav-item"><a class="nav-link" id="ratingTab" href="{{url_for('show_reviews', company_id=company_id, department_id=department['id'])}}">Рейтинг</a></li>
+        <li class="nav-item"><a class="nav-link active" id="reviewsTab" href="/company/{{company_id}}/internship/{{department['id']}}/reviews">Отзывы</a></li>
+    </ul>
+    </br>
+    <div id="mainBody">
+    {% if reviews_exist %}
+    <nav aria-label="pagination">
+        <ul class="pagination justify-content-center">
+            {% for i in range(1, l+1) %}
+                <li class="page-item"><a class="page-link" href="#" id="{{i-1}}">{{i}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+<div id="comments">
+{% for review in jsonreviews[0] %}
+    {% if review['pros'] or review['cons'] %}
+    <div class="card card-review">
+            {% if review['pros'] %}
+        <div class="card-body">
+            <h6>Плюсы:</h6>
+            <pre>{{review['pros']}}</pre>
+        </div>
+            {% endif %}
+            {% if review['cons'] %}
+        <div class="card-body">
+            <h6>Минусы:</h6>
+            <pre>{{review['cons']}}</pre>
+        </div>
+            {% endif %}
+    </div>
+    <div class="card-footer text-muted" style="font-size: 15px;">
+        <div class="row">
+        <div class="col">
+            <small>Даты стажировки:</small></br>
+                <small>{{review['month_start'][:3]}} {{review['year_start']}} - {{review['month_end'][:3]}} {{review['year_end']}}</small>
+        </div>
+        <div class="col date">
+                <small>{{review['date_posted'].strftime('%d.%m.%Y')}}</small>
+                </div>
+        </div>
+    </div>
+    {% endif %}
+
+</br>
+{% endfor %}
+</div>
+
+{% else %}
+    <div class="alert alert-primary" role="alert">
+       Здесь пока ничего нет, но вы можете
+       <a href="{{url_for('form')}}" id="blueHref">оставить первый отзыв</a>
+    </div>
+
+{% endif %}
+</div>
+</div>
+<script>
+    var loc = '{{department.location}}'
+    var timing = '{{timing}}'
+    var requirements = {{requirements|tojson}}
+    var responsibilities = {{responsibilities|tojson}}
+
+    $("#infoTab").on("click", function() {
+    $("#infotab").addClass('active');
+    $('#reviewsTab').removeClass('active');
+    $("#mainBody").empty();
+    $('#mainBody').append('<div class="card bg-light"><div class="card-header"><b>Общая информация:</b></div><div class="card-body"><ul id="generalInfo">')
+    $('#generalInfo').append('<p>Город: '+loc+'</p>');
+
+    if (timing) $('#generalInfo').append('<p>Длительность: '+timing+'</p>');
+    
+    $('#mainBody').append('</br>');
+    if (requirements) {
+        $("#mainBody").append('<div class="card bg-light"><div class="card-header"><b>Требования:</b></div><div class="card-body"><ul id="requirements">')
+        for (var i=0; i<requirements.length; i++){
+                $("#requirements").append('<li>'+requirements[i]+'</li>')
+        }
+        $('#mainBody').append('</br>')
+    }
+
+    if (responsibilities) {
+        $("#mainBody").append('<div class="card bg-light"><div class="card-header"><b>Обязанности:</b></div><div class="card-body"><ul id="responsibilities">')
+        for (var i=0; i<responsibilities.length; i++){
+                $("#responsibilities").append('<li>'+responsibilities[i]+'</li>')
+        }
+        $('#mainBody').append('</br>')
+    } 
+});
+
+var reviews = {{jsonreviews|tojson}};
+var reviewsFlattened = [].concat.apply([], reviews);
+
+$(".page-link").on("click", function() {
+    $("#comments").empty();
+    var id = parseInt($(this).attr("id"));
+    for (var i=0; i<reviews[id].length; i++) {
+        var review = reviews[id][i];
+        var date = new Date(review.date_posted).toLocaleDateString().split('/').join('.')
+        $("#comments").append('<div class="card card-review" id="review-'+i+'">')
+        if (review.pros) {
+            $("#review-"+i).append('<div class="card-body"><h6>Плюсы:</h6>\
+            <pre>'+review.pros+'</pre></div>')
+        }
+        if (review.cons) {
+            $("#review-"+i).append('<div class="card-body"><h6>Минусы:</h6>\
+            <pre>'+review.cons+'</pre></div>')
+        }
+
+        $("#review-"+i).append('<div class="card-footer text-muted" id="footer-'+i+'" style="font-size: 15px;"></div>')
+        $("#footer-"+i).append('<div class="row"><div class="col" id="internship-dates-'+i+'"></div>\
+        <div class="col date" id="post-date-'+i+'"></div></div>')
+        $("#internship-dates-"+i).append('<small>Даты стажировки:</small></br>\
+                <small>'+review.month_start.substring(0,3)+' '+review.year_start+' - '+review.month_end.substring(0,3)+' '+review.year_end+'</small>')
+        $("#post-date-"+i).append('<small>'+date+'</small>')
+        $("#comments").append('</br>')
+    
+}
+
+    // change pagination
+    if (id >= 5) {
+            if (id+3 >= l) pages(l-6, l, l, rightExtend=false)
+            else pages(id-2, id+2, l)
+        } else { 
+            pages(0, 5, l, true, false) }
+    }
+
+})
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layout.html" %} 
+
+{% block main %}
+    <legend class="border-bottom mb-4">{{company}}</legend>
+
+    {% for internship in jsonints %}
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center active">
+                {{internship['title']}}
+                    <span class="badge badge-primary badge-pill">{{internship['reviews']}}</span>
+            </li>
+                {% for department in departments %}
+                {% if department.internship_id == internship.id %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a class = "link" href="/company/{{company_id}}/internship/{{department['id']}}">
+                    {{department['title']}}
+                </a>
+                {% endif %}
+            </li>
+                {% endfor %}
+        </ul>
+    </br>
+    {% endfor %}
+    
+
+
+<style>
+
+.link {
+    color: #000000;
+}
+
+.link:active {
+    color: #000000;
+    text-decoration: none;
+}
+
+</style>
+
+<script>
+ 
+    var Departments = JSON.parse('{{jsonints|tojson|safe}}')
+    $(".page-link").on("click", function() {
+    
+        var id = parseInt($(this).attr("id"))
+        console.log(id)
+        $(".list-group").empty();
+        for (var i = 0; i < Departments[id].length; i++) {
+            var Department = Departments[id][i];       
+            $(".list-group").append('<a href="/company/'+Department.copany_id+'/Department/'+Department.id+'"><li class="list-group-item d-flex justify-content-between align-items-center">'+Department.title+'<span class="badge badge-primary badge-pill">'+Department.reviews+'</span></li></a>') 
+    }
+})
+
+ </script>       
+
+{% endblock %}
