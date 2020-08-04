@@ -7,17 +7,23 @@
 ### Интерфейс
 
 Основной экран
+
 ![](pictures/1.png)
 
 Отделы внутри компании
+
 ![](pictures/2.png)
 
 Общий рейтинг
+
 ![](pictures/3.png)
 
 Текстовые отзывы
+
 ![](pictures/4.png)
 
 Анкета
+
 ![](pictures/5.png)
+
 ![](pictures/6.png)
